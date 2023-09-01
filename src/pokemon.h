@@ -42,8 +42,7 @@ enum TIPO pokemon_tipo(pokemon_t *pokemon);
  * Busca un ataque del pokemon por nombre. Devuelve el ataque encontrado o NULL
  * si no se encuentra.
  */
-const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,
-					   const char *nombre);
+const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon, const char *nombre);
 
 /**
  * Aplica la función f a cada uno de los pokemon (por orden alfabetico). El
@@ -51,8 +50,7 @@ const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,
  *
  * Devuelve la cantidad de pokemon al que se les aplicó la función.
  */
-int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),
-		     void *aux);
+int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *), void *aux);
 
 /**
  * Aplica la función f a cada uno de los ataques de un pokemon (con el mismo
@@ -61,8 +59,7 @@ int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),
  *
  * Devuelve la cantidad de ataques al que se les aplicó la función.
  */
-int con_cada_ataque(pokemon_t *pokemon,
-		    void (*f)(const struct ataque *, void *), void *aux);
+int con_cada_ataque(pokemon_t *pokemon, void (*f)(const struct ataque *, void *), void *aux);
 
 /**
  *  Libera la información de los pokemon
