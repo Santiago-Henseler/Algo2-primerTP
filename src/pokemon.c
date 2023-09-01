@@ -7,6 +7,7 @@
 
 struct pokemon {
 	int pone_lo_que_haga_falta;
+	char o;
 };
 
 struct info_pokemon {
