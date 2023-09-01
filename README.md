@@ -4,7 +4,7 @@
 
 # TP1
 
-## Repositorio de (Nombre Apellido) - (Padrón) - (Mail)
+## Repositorio de Santiago Henseler - 110732 - shenseler@fi.uba.ar
 
 - Para compilar:
 
