@@ -64,9 +64,34 @@ struct pokemon *cargar_nombre_pokemon(char linea[MAX_LINEA])
 	if(validar_tipo == -1)
 		return NULL;
 
-	nuevo_pokemon->tipo = definir_tipo(tipo);
+	nuevo_pokemon->tipo = validar_tipo;
 
 	return nuevo_pokemon;
+}
+
+void cargar_ataque_pokemon(char linea[MAX_LINEA], struct pokemon *ip)
+{
+
+	char tipo;
+	char valor;
+
+	sscanf(linea, "%[^;];%c;%c", ip->ataques[ip->cantidad_ataques]->nombre, &tipo, &valor);
+
+	/*
+	if(cantidad < 3)
+		return NULL;
+
+		if(validar_tipo == -1)
+		return NULL;
+		*/
+
+	enum TIPO validar_tipo = definir_tipo(tipo);
+	
+	
+
+	ip->ataques[ip->cantidad_ataques]->poder = (unsigned int)atoi(&valor);
+	ip->ataques[ip->tipo]->tipo = validar_tipo;
+	ip->cantidad_ataques++;
 }
 
 informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
@@ -87,21 +112,31 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	int linea_recorrida = 0;
 	char linea[MAX_LINEA];
 	bool error = false;
-	
+
 	while(fgets(linea, 200, archivo) != NULL && !error){
 
 		if(linea_recorrida < 1){
-			info_pokemones->pokemones[info_pokemones->cantidad_pokemones] = cargar_nombre_pokemon(linea);
+
+			info_pokemones->pokemones[info_pokemones->cantidad_pokemones] = malloc(sizeof(struct pokemon));
+
+			if(info_pokemones->pokemones[info_pokemones->cantidad_pokemones] == NULL)
+				error = true;
+
+			//info_pokemones->pokemones[info_pokemones->cantidad_pokemones] = cargar_nombre_pokemon(linea);
 
 			if(info_pokemones->pokemones[info_pokemones->cantidad_pokemones]){
+				info_pokemones->pokemones[info_pokemones->cantidad_pokemones]->cantidad_ataques = 0;
 				info_pokemones->cantidad_pokemones++;
 			}else{
 				error = true;
 			}
-
-		}else{
-			//cargar_ataque_pokemon(linea,);
 		}
+		/*
+		
+		else{
+			cargar_ataque_pokemon(linea, info_pokemones->pokemones[info_pokemones->cantidad_pokemones-1]);
+		}
+		*/
 
 		if(linea_recorrida == 3){
 			linea_recorrida = 0;
@@ -109,6 +144,8 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 			linea_recorrida++;
 		}
 	}
+	
+	fclose(archivo);
 
 	return info_pokemones;
 }
@@ -120,17 +157,29 @@ pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 
 int pokemon_cantidad(informacion_pokemon_t *ip)
 {
-	return 0;
+
+	if(ip == NULL)
+		return -1;
+
+	return ip->cantidad_pokemones;;
 }
 
 const char *pokemon_nombre(pokemon_t *pokemon)
 {
-	return NULL;
+
+	if(pokemon == NULL)
+			return NULL;
+
+	return pokemon->nombre;
 }
 
 enum TIPO pokemon_tipo(pokemon_t *pokemon)
 {
-	return FUEGO;
+	
+	if(pokemon == NULL)
+		return NORMAL;
+	
+	return pokemon->tipo;
 }
 
 const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre)
@@ -158,4 +207,11 @@ int con_cada_ataque(pokemon_t *pokemon, void (*f)(const struct ataque *, void *)
 
 void pokemon_destruir_todo(informacion_pokemon_t *ip)
 {
+
+	for(int i = 0; i < ip->cantidad_pokemones; i++){
+		free(ip->pokemones[i]);
+	}
+
+	free(ip);
+
 }
