@@ -1,15 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include "pokemon.h"
 #include "tipo.h"
 #include "ataque.h"
-
-
-//Defino constantes
-#define MAX_LINEA 200
-#define MAX_NOMBRE 70
+#include "cargar_pokemones.h"
 
 struct pokemon {
 	struct ataque **ataques;
@@ -23,30 +16,8 @@ struct info_pokemon {
 	int cantidad_pokemones;
 };
 
-enum TIPO definir_tipo(char texto)
+struct pokemon *cargar_nombre_pokemon(char nombre[MAX_LINEA])
 {
-    enum TIPO tipo = -1;
-
-    if(texto == 'N'){
-        tipo = NORMAL;
-    }else if(texto == 'F'){
-        tipo = FUEGO;
-    }else if(texto == 'A'){
-        tipo = AGUA;
-    }else if(texto ==  'P'){
-        tipo = PLANTA;
-    }else if(texto == 'E'){
-        tipo = ELECTRICO;
-    }else if(texto == 'R'){
-        tipo = ROCA;
-    }
-
-    return tipo;
-}
-
-struct pokemon *cargar_nombre_pokemon(char linea[MAX_LINEA])
-{
-
 	struct pokemon *nuevo_pokemon = malloc(sizeof(struct pokemon));
 
 	if(nuevo_pokemon == NULL)
@@ -54,44 +25,74 @@ struct pokemon *cargar_nombre_pokemon(char linea[MAX_LINEA])
 
 	char tipo;
 
-	int cantidad = sscanf(linea, "%[^;];%c", nuevo_pokemon->nombre, &tipo);
+	int cantidad = sscanf(nombre, "%[^;];%c", nuevo_pokemon->nombre, &tipo);
 
 	if(cantidad < 2)
 		return NULL;
 
-	enum TIPO validar_tipo = definir_tipo(tipo);
-	
-	if(validar_tipo == -1)
-		return NULL;
-
-	nuevo_pokemon->tipo = validar_tipo;
+	nuevo_pokemon->tipo = definir_tipo(tipo);
 
 	return nuevo_pokemon;
 }
 
-void cargar_ataque_pokemon(char linea[MAX_LINEA], struct pokemon *ip)
+void validar_pokemones_leidos(struct info_pokemon *ip)
 {
 
-	char tipo;
-	char valor;
+	for(int i = 0; i < ip->cantidad_pokemones; i++){
+		if(ip->pokemones[i]->cantidad_ataques != 3){
+			for(int j = 0; j < ip->pokemones[i]->cantidad_ataques; j++){
+				free(ip->pokemones[i]->ataques[j]);
+			}
+			free(ip->pokemones[i]);
+			ip->cantidad_pokemones--;
+		}
+	}
 
-	sscanf(linea, "%[^;];%c;%c", ip->ataques[ip->cantidad_ataques]->nombre, &tipo, &valor);
+}
 
-	/*
-	if(cantidad < 3)
-		return NULL;
+void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
+{
+	char linea[MAX_LINEA];
+	bool error = false;
+	int linea_recorrida = 0;
 
-		if(validar_tipo == -1)
-		return NULL;
-		*/
+	while(fgets(linea, 200, archivo) != NULL && !error){
 
-	enum TIPO validar_tipo = definir_tipo(tipo);
+		if(linea_recorrida < 1){
+
+			ip->pokemones[ip->cantidad_pokemones] = cargar_nombre_pokemon(linea);
+
+			if(ip->pokemones[ip->cantidad_pokemones]){
+				ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques = 0;
+				ip->pokemones[ip->cantidad_pokemones]->ataques = malloc(sizeof(struct ataque));
+				if(ip->pokemones[ip->cantidad_pokemones]->ataques == NULL){
+					error = true;
+				}
+			}else{
+				error = true;
+			}
+
+		}else{	
+
+			ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] = cargar_ataque_pokemon(linea); 
+			
+			if(ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] == NULL){
+				error = true;
+			}else{
+				ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques++;
+			}	
+		}
+
+		if(linea_recorrida == 3){
+			ip->cantidad_pokemones++;
+			linea_recorrida = 0;
+		}else{
+			linea_recorrida++;
+		}
+		
+	}
 	
-	
-
-	ip->ataques[ip->cantidad_ataques]->poder = (unsigned int)atoi(&valor);
-	ip->ataques[ip->tipo]->tipo = validar_tipo;
-	ip->cantidad_ataques++;
+	validar_pokemones_leidos(ip);
 }
 
 informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
@@ -102,51 +103,25 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	if(archivo == NULL)
 		return NULL;
 
-	struct info_pokemon *info_pokemones = malloc(sizeof(struct info_pokemon));
+	struct info_pokemon *info_pokemones = (struct info_pokemon*)malloc(sizeof(struct info_pokemon));
 
-	if(info_pokemones == NULL)
+	info_pokemones->pokemones = (struct pokemon**)malloc(sizeof(struct pokemon));
+
+	if(info_pokemones == NULL || info_pokemones->pokemones == NULL){
+		free(info_pokemones);
+		free(info_pokemones->pokemones);
 		return NULL;
+	}
 
 	info_pokemones->cantidad_pokemones = 0;
 
-	int linea_recorrida = 0;
-	char linea[MAX_LINEA];
-	bool error = false;
+	leer_pokemones(archivo, info_pokemones);
 
-	while(fgets(linea, 200, archivo) != NULL && !error){
-
-		if(linea_recorrida < 1){
-
-			info_pokemones->pokemones[info_pokemones->cantidad_pokemones] = malloc(sizeof(struct pokemon));
-
-			if(info_pokemones->pokemones[info_pokemones->cantidad_pokemones] == NULL)
-				error = true;
-
-			//info_pokemones->pokemones[info_pokemones->cantidad_pokemones] = cargar_nombre_pokemon(linea);
-
-			if(info_pokemones->pokemones[info_pokemones->cantidad_pokemones]){
-				info_pokemones->pokemones[info_pokemones->cantidad_pokemones]->cantidad_ataques = 0;
-				info_pokemones->cantidad_pokemones++;
-			}else{
-				error = true;
-			}
-		}
-		/*
-		
-		else{
-			cargar_ataque_pokemon(linea, info_pokemones->pokemones[info_pokemones->cantidad_pokemones-1]);
-		}
-		*/
-
-		if(linea_recorrida == 3){
-			linea_recorrida = 0;
-		}else{
-			linea_recorrida++;
-		}
-	}
-	
 	fclose(archivo);
 
+	if(info_pokemones->cantidad_pokemones == 0)
+		return NULL;
+	
 	return info_pokemones;
 }
 
@@ -209,6 +184,9 @@ void pokemon_destruir_todo(informacion_pokemon_t *ip)
 {
 
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
+		for(int j = 0; j < ip->pokemones[i]->cantidad_ataques;  j++){
+			free(ip->pokemones[i]->ataques[j]);
+		}
 		free(ip->pokemones[i]);
 	}
 
