@@ -9,18 +9,18 @@
 - Para compilar:
 
 ```bash
-línea de compilación
+gcc *.c -o entrega -std=c99 -Wall -Wconversion -Werror -lm
 ```
 
 - Para ejecutar:
 
 ```bash
-línea de ejecución
+./entrega.out
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-línea con valgrind
+valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 --show-leak-kinds=all --trace-children=yes ./entrega.out
 ```
 ---
 ##  Funcionamiento
