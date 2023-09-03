@@ -91,7 +91,7 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 		}
 		
 	}
-	
+
 	validar_pokemones_leidos(ip);
 }
 
@@ -125,9 +125,20 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	return info_pokemones;
 }
 
+
+//hecho sin errores  #desde
 pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 {
-	return NULL;
+
+	struct pokemon *aux =  NULL;
+
+	for(int i = 0; ip->cantidad_pokemones; i++){
+		if(strcmp(ip->pokemones[i]->nombre, nombre) == 0){
+			aux = ip->pokemones[i];
+		}
+	}
+
+	return aux;
 }
 
 int pokemon_cantidad(informacion_pokemon_t *ip)
@@ -136,7 +147,7 @@ int pokemon_cantidad(informacion_pokemon_t *ip)
 	if(ip == NULL)
 		return -1;
 
-	return ip->cantidad_pokemones;;
+	return ip->cantidad_pokemones;
 }
 
 const char *pokemon_nombre(pokemon_t *pokemon)
@@ -159,11 +170,24 @@ enum TIPO pokemon_tipo(pokemon_t *pokemon)
 
 const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre)
 {
-	return NULL;
+	
+	struct ataque *aux =  NULL;
+
+	for(int i = 0; pokemon->cantidad_ataques; i++){
+		if(strcmp(pokemon->ataques[i]->nombre, nombre) == 0){
+			aux = pokemon->ataques[i];
+		}
+	}
+
+	return aux;
 }
+//hecho sin errores  #hasta
 
 int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),	void *aux)
 {
+
+	//ordenar_pokemones();
+
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 		f(ip->pokemones[i], aux);
 	}
