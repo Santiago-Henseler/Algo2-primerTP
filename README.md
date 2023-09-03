@@ -57,4 +57,36 @@ vector_original = vector;
 ---
 
 ## Respuestas a las preguntas teóricas
-Incluír acá las respuestas a las preguntas del enunciado (si aplica).
+
+-  *Explicación de cómo se logra que los pokemon queden ordenados alfabéticamente:*
+<br/>
+
+La implementación para que los pokemons queden ordenados alfabeticamente la hice en el archivo `src/pokemon.c` en la función `ordenar_pokemones()`. La funcion recibe por parametro todos los pokemones validos y con un `for` itera pokemon a pokemon comparandolos afabeticamente con el resto almacenando en la variable `min` la posición del menor elemento. Luego intercambia   
+<br/>
+-  *Analisis de la funcion que ordena alfabéticamente los pokemons:*
+-  
+```c
+void ordenar_pokemones(struct info_pokemon *ip)
+{
+	for(int i = 0; i < ip->cantidad_pokemones; i++){ // ---> N
+		int min = i;    // ---> 1
+
+		for(int j = i; j < ip->cantidad_pokemones; j++){ // ---> N
+			if(strcmp(ip->pokemones[min]->nombre, ip->pokemones[j]->nombre) > 0){
+				min = j; // ---> 1
+			}
+		}
+
+		struct pokemon *aux = ip->pokemones[min]; // ---> 1
+		ip->pokemones[min] = ip->pokemones[i]; // ---> 1 
+		ip->pokemones[i] = aux; // ---> 1
+
+	}
+}
+```
+
+Contando todas las instruciónes llegamos a la siguiente ecuación: `T(n) = (1+1+1+1)*n*n` . Entonces el algoritmo de ordenar_pokemones tiene una complejidad de *O(n²)* porque: `4n² < N * n² , ∀ N > 4`
+
+
+
+
