@@ -166,7 +166,10 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 {
 
-	struct pokemon *aux =  NULL;
+	if(ip == NULL)
+		return NULL;
+	
+	struct pokemon *aux = NULL;
 
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 
@@ -181,9 +184,8 @@ pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 
 int pokemon_cantidad(informacion_pokemon_t *ip)
 {
-
 	if(ip == NULL)
-		return -1;
+		return 0;
 
 	return ip->cantidad_pokemones;
 }
@@ -209,6 +211,10 @@ enum TIPO pokemon_tipo(pokemon_t *pokemon)
 const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre)
 {
 	
+	if(pokemon == NULL)
+		return NULL;
+
+
 	struct ataque *aux =  NULL;
 
 	for(int i = 0;i < pokemon->cantidad_ataques; i++){
@@ -222,9 +228,11 @@ const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre
 
 int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),	void *aux)
 {
-
+	if(ip == NULL || f == NULL)
+		return 0;
+	
 	ordenar_pokemones(ip);
-
+	
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 		f(ip->pokemones[i], aux);
 	}
@@ -234,6 +242,10 @@ int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),	
 
 int con_cada_ataque(pokemon_t *pokemon, void (*f)(const struct ataque *, void *), void *aux)
 {
+	if(pokemon == NULL || f == NULL)
+		return 0;
+	
+
 	for(int i = 0; i < pokemon->cantidad_ataques; i++){
 		f(pokemon->ataques[i], aux);
 	}
@@ -244,13 +256,16 @@ int con_cada_ataque(pokemon_t *pokemon, void (*f)(const struct ataque *, void *)
 void pokemon_destruir_todo(informacion_pokemon_t *ip)
 {
 
-	for(int i = 0; i < ip->cantidad_pokemones; i++){
-		for(int j = 0; j < ip->pokemones[i]->cantidad_ataques;  j++){
-			free(ip->pokemones[i]->ataques[j]);
+	if(ip !=  NULL){
+		for(int i = 0; i < ip->cantidad_pokemones; i++){
+			for(int j = 0; j < ip->pokemones[i]->cantidad_ataques;  j++){
+				free(ip->pokemones[i]->ataques[j]);
+			}
+			free(ip->pokemones[i]);
 		}
-		free(ip->pokemones[i]);
-	}
 
 	free(ip);
+
+	}
 	
 }
