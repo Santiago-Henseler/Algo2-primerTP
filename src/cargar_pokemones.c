@@ -25,8 +25,7 @@ enum TIPO definir_tipo(char texto)
 
 struct ataque *cargar_ataque_pokemon(char linea[MAX_LINEA])
 {
-
-	struct ataque *nuevo_ataque = malloc(sizeof(struct ataque));
+	struct ataque *nuevo_ataque = calloc(1, sizeof(struct ataque));
 
 	if(nuevo_ataque == NULL)
 		return NULL;

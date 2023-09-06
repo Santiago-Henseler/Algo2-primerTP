@@ -16,9 +16,27 @@ struct info_pokemon {
 	int cantidad_pokemones;
 };
 
+void ordenar_pokemones(struct info_pokemon *ip)
+{
+	for(int i = 0; i < ip->cantidad_pokemones; i++){
+		int min = i;
+
+		for(int j = i; j < ip->cantidad_pokemones; j++){
+			if(strcmp(ip->pokemones[min]->nombre, ip->pokemones[j]->nombre) > 0){
+				min = j;
+			}
+		}
+
+		struct pokemon *aux = ip->pokemones[min];
+		ip->pokemones[min] = ip->pokemones[i];
+		ip->pokemones[i] = aux;
+
+	}
+}
+
 struct pokemon *cargar_nombre_pokemon(char nombre[MAX_LINEA])
 {
-	struct pokemon *nuevo_pokemon = malloc(sizeof(struct pokemon));
+	struct pokemon *nuevo_pokemon = calloc(1, sizeof(struct pokemon));
 
 	if(nuevo_pokemon == NULL)
 		return NULL;
@@ -56,31 +74,46 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 	bool error = false;
 	int linea_recorrida = 0;
 
+	ip->pokemones = malloc(sizeof(struct pokemon**));
+
 	while(fgets(linea, 200, archivo) != NULL && !error){
 
-		if(linea_recorrida < 1){
+		if(linea_recorrida == 1){
 
-			ip->pokemones[ip->cantidad_pokemones] = cargar_nombre_pokemon(linea);
+			struct pokemon *aux = realloc(ip->pokemones, ((unsigned int)ip->cantidad_pokemones+1)*sizeof(struct pokemon**));
 
-			if(ip->pokemones[ip->cantidad_pokemones]){
-				ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques = 0;
-				ip->pokemones[ip->cantidad_pokemones]->ataques = malloc(sizeof(struct ataque));
-				if(ip->pokemones[ip->cantidad_pokemones]->ataques == NULL){
+			if(aux == NULL){
+				error = true;
+			}else{
+				ip->pokemones[ip->cantidad_pokemones] = cargar_nombre_pokemon(linea);
+
+				if(ip->pokemones[ip->cantidad_pokemones] == NULL){
 					error = true;
+				}else{
+					ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques = 0;
+					ip->pokemones[ip->cantidad_pokemones]->ataques = malloc(sizeof(struct ataque*));
+					
+					if(ip->pokemones[ip->cantidad_pokemones]->ataques == NULL){
+						error = true;
+					}
 				}
-			}else{
-				error = true;
 			}
-
 		}else{	
+			/*
+			struct ataque *aux2 = realloc(ip->pokemones[ip->cantidad_pokemones]->ataques, ((unsigned int)ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques+1)*sizeof(struct ataque*));
 
-			ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] = cargar_ataque_pokemon(linea); 
-			
-			if(ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] == NULL){
+			if(aux2 == NULL){
 				error = true;
 			}else{
-				ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques++;
-			}	
+				ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] = cargar_ataque_pokemon(linea); 
+				
+				if(ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] == NULL){
+					error = true;
+				}else{
+					ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques++;
+				}	
+			}
+			*/
 		}
 
 		if(linea_recorrida == 3){
@@ -98,18 +131,20 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 {
 
+	if(path == NULL)
+		return NULL;
+
 	FILE *archivo = fopen(path, "r");
 
 	if(archivo == NULL)
 		return NULL;
+	
+		
+	struct info_pokemon *info_pokemones = malloc(sizeof(struct info_pokemon));
 
-	struct info_pokemon *info_pokemones = (struct info_pokemon*)malloc(sizeof(struct info_pokemon));
-
-	info_pokemones->pokemones = (struct pokemon**)malloc(sizeof(struct pokemon));
-
-	if(info_pokemones == NULL || info_pokemones->pokemones == NULL){
+	if(info_pokemones == NULL ){
+		fclose(archivo);
 		free(info_pokemones);
-		free(info_pokemones->pokemones);
 		return NULL;
 	}
 
@@ -124,7 +159,6 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 	
 	return info_pokemones;
 }
-
 
 //hecho sin errores  #desde
 pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
@@ -181,12 +215,11 @@ const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre
 
 	return aux;
 }
-//hecho sin errores  #hasta
 
 int con_cada_pokemon(informacion_pokemon_t *ip, void (*f)(pokemon_t *, void *),	void *aux)
 {
 
-	//ordenar_pokemones();
+	ordenar_pokemones(ip);
 
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 		f(ip->pokemones[i], aux);
@@ -204,6 +237,7 @@ int con_cada_ataque(pokemon_t *pokemon, void (*f)(const struct ataque *, void *)
 	return pokemon->cantidad_ataques;
 }
 
+//hecho sin errores  #hasta
 void pokemon_destruir_todo(informacion_pokemon_t *ip)
 {
 
