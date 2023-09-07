@@ -25,7 +25,7 @@ valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exit
 ---
 ##  Funcionamiento
 
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
+En este TP voy a explicar como implemente la funcion `pokemon_cargar_archivo()` porque considero que fue la más dificil de implementar.
 
 Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
 
@@ -36,7 +36,7 @@ Incluír **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente d
 El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
 
 <div align="center">
-<img width="70%" src="img/diagrama1.svg">
+<img width="70%" src="img/flujo1.jpg">
 </div>
 
 En el archivo `sarasa.c` la función `funcion1` utiliza `realloc` para agrandar la zona de memoria utilizada para conquistar el mundo. El resultado de `realloc` lo guardo en una variable auxiliar para no perder el puntero original en caso de error:
@@ -64,7 +64,7 @@ vector_original = vector;
 La implementación para que los pokemons queden ordenados alfabeticamente la hice en el archivo `src/pokemon.c` en la función `ordenar_pokemones()`. La funcion recibe por parametro todos los pokemones validos y con un `for` itera pokemon a pokemon comparandolos afabeticamente con el resto almacenando en la variable `min` la posición del menor elemento. Luego intercambia   
 <br/>
 -  *Analisis de la funcion que ordena alfabéticamente los pokemons:*
--  
+  
 ```c
 void ordenar_pokemones(struct info_pokemon *ip)
 {
