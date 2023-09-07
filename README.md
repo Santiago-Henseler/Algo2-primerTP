@@ -15,12 +15,12 @@ gcc *.c -o entrega -std=c99 -Wall -Wconversion -Werror -lm
 - Para ejecutar:
 
 ```bash
-./entrega.out
+./entrega
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 --show-leak-kinds=all --trace-children=yes ./entrega.out
+valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 --show-leak-kinds=all --trace-children=yes ./entrega
 ```
 ---
 ##  Funcionamiento
