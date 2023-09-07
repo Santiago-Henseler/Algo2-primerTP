@@ -38,6 +38,10 @@ struct ataque *cargar_ataque_pokemon(char linea[MAX_LINEA])
 	if(cantidad < 3)
 		return NULL;
 
+    if(definir_tipo(tipo) == -1){
+        return NULL;
+    }
+
 	nuevo_ataque->poder = (unsigned int)atoi(&valor);
 	nuevo_ataque->tipo = definir_tipo(tipo);
 	

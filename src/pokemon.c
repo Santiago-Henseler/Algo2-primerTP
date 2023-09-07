@@ -61,6 +61,7 @@ void validar_pokemones_leidos(struct info_pokemon *ip)
 			for(int j = 0; j < ip->pokemones[i]->cantidad_ataques; j++){
 				free(ip->pokemones[i]->ataques[j]);
 			}
+			free(ip->pokemones[i]->ataques);
 			free(ip->pokemones[i]);
 			ip->cantidad_pokemones--;
 		}
@@ -98,6 +99,7 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 					struct ataque **aux2 = calloc(3, sizeof(struct ataque));
 					
 					if(aux2 == NULL){
+				
 						error = true;
 					}else{
 						ip->pokemones[ip->cantidad_pokemones]->ataques = aux2;
@@ -166,10 +168,10 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 {
 
-	if(ip == NULL)
+	if(ip == NULL || nombre == NULL)
 		return NULL;
 	
-	struct pokemon *aux = NULL;
+	struct pokemon *aux = calloc(1, sizeof(struct pokemon*));
 
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 
@@ -178,7 +180,7 @@ pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 			}
 			
 	}
-	
+
 	return aux;
 }
 
@@ -261,9 +263,11 @@ void pokemon_destruir_todo(informacion_pokemon_t *ip)
 			for(int j = 0; j < ip->pokemones[i]->cantidad_ataques;  j++){
 				free(ip->pokemones[i]->ataques[j]);
 			}
+			free(ip->pokemones[i]->ataques);
 			free(ip->pokemones[i]);
 		}
 
+	free(ip->pokemones);
 	free(ip);
 
 	}
