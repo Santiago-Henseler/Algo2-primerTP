@@ -16,6 +16,10 @@ struct info_pokemon {
 	int cantidad_pokemones;
 };
 
+// Defino funciones auxiliares
+
+// Pre: Recibe un puntero a struct info_pokemon no NULL
+// Post: Ordena alfabeticamente los pokemones recibidos
 void ordenar_pokemones(struct info_pokemon *ip)
 {
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
@@ -34,6 +38,8 @@ void ordenar_pokemones(struct info_pokemon *ip)
 	}
 }
 
+// Pre: Recibe un string no NULL
+// Post: Devuelve un pointer a un ataque rellenado con la informacion del string
 struct pokemon *cargar_nombre_pokemon(char linea[MAX_LINEA])
 {
 	struct pokemon *nuevo_pokemon = malloc(sizeof(struct pokemon));
@@ -53,6 +59,8 @@ struct pokemon *cargar_nombre_pokemon(char linea[MAX_LINEA])
 	return nuevo_pokemon;
 }
 
+// Pre: Recibe un puntero astruct info_pokemon no NULL
+// Post: Borra los pokemones no validos
 void validar_pokemones_leidos(struct info_pokemon *ip)
 {
 
@@ -69,6 +77,8 @@ void validar_pokemones_leidos(struct info_pokemon *ip)
 
 }
 
+// Pre: Recibe un puntero a struct info_pokemon y un puntero a archivo no NULL
+// Post: Carga en el struct info_pokemon todos los pokemones validos que hay en el archivo
 void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 {
 	char linea[MAX_LINEA];
@@ -108,7 +118,6 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 			}
 		}else{
 			
-			
 			ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] = cargar_ataque_pokemon(linea); 
 				
 			if(ip->pokemones[ip->cantidad_pokemones]->ataques[ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques] == NULL){
@@ -117,7 +126,6 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 				ip->pokemones[ip->cantidad_pokemones]->cantidad_ataques++;
 					
 			}	
-			
 			
 		}
 
@@ -132,6 +140,8 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 
 	validar_pokemones_leidos(ip);
 }
+
+// Fin de funciones auxiliares
 
 informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 {
@@ -159,9 +169,10 @@ informacion_pokemon_t *pokemon_cargar_archivo(const char *path)
 
 	fclose(archivo);
 
-	if(info_pokemones->cantidad_pokemones == 0)
+	if(info_pokemones->cantidad_pokemones == 0){
+		free(info_pokemones);
 		return NULL;
-	
+	}
 	return info_pokemones;
 }
 
@@ -172,6 +183,9 @@ pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 		return NULL;
 	
 	struct pokemon *aux = calloc(1, sizeof(struct pokemon*));
+
+	if(aux == NULL)
+		return NULL;
 
 	for(int i = 0; i < ip->cantidad_pokemones; i++){
 
