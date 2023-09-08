@@ -55,6 +55,7 @@ void ordenar_pokemones(struct info_pokemon *ip)
 Contando todas las instruciónes llegamos a la siguiente ecuación: `T(n) = (1+1+1+1)*n*n` . Entonces el algoritmo de ordenar_pokemones tiene una complejidad de *O(n²)* porque: `4n² < N * n² , ∀ N > 4`
 
 ---
+
 -  *Explicación de algunas funciones y del manejo de la memoria:*
 Ahora voy a explicar como implemente la funcion `pokemon_cargar_archivo()` porque considero que fue la más dificil de implementar.
 
@@ -69,6 +70,26 @@ Si se reserva memoria correctamente se llama a la funcion `leer_pokemones()`. Lu
 <div align="center">
 <img width="70%" src="img/flujo1.jpg">
 </div>
+
+Al llamar a la funcion `leer_pokemones()` se le pasa por parametro el archivo abierto y el puntero `info_pokemones`. Recorre el archivo linea por linea y según si en la linea hay pokemones o ataques llama a `cargar_nombre_pokemon` o a `cargar_ataque_pokemon`. 
+
+*Aclaración:* Para mejorar la "lectura" del codigo implemente la libreria `cargar_pokemones.c` en la que pretendia crear la mayoria de funciones para cargar los polemones (`cargar_nombre_pokemon` o `cargar_ataque_pokemon` por ej.) pero al manejar los structs de manera opaca y no poder modificar `pokemon.h` pude implementar pocas funciones en esta libreria.
+
+La funcion `cargar_nombre_pokemon` parsea el nombre de pokemon y su tipo, devolviendo un puntero a un `struct pokemon`. Maneja la memoria de la siguiente manera:
+	- Reserva memoria dinamica con `malloc()` en heap
+ 	- Devuelve el puntero a la memoria reservada en el heap
+  
+<div align="center">
+<img width="70%" src="img/memoria2.png">
+</div>
+
+Cuando se devuelve el puntero a lo que se reservo en la funcion `cargar_nombre_pokemon()`, en la funcion `leer_pokemones()` se le asigna ese puntero.
+
+<div align="center">
+<img width="70%" src="img/memoria3.png">
+</div>
+
+la funcion `cargar_ataque_pokemon` maneja la memoria de igual manera que la funcion `cargar_nombre_pokemon()` por eso no la desarrollo devuelta.
 
 Cuando finaliza la funcion `pokemon_cargar_archivo()` la memoria queda distribuida de la siguiente manera:
 
