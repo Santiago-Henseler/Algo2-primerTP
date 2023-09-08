@@ -73,12 +73,12 @@ void ordenar_pokemones(struct info_pokemon *ip)
 Contando todas las instruciónes llegamos a la siguiente ecuación: `T(n) = (1+1+1+1)*n*n` . Entonces el algoritmo de ordenar_pokemones tiene una complejidad de *O(n²)* porque: `4n² < N * n² , ∀ N > 4`
 
 <br/>
--  *Disposición de la memoria en el programa:*
-
-  	Cuando finaliza la funcion `pokemon_cargar_archivo()` la memoria queda distribuida de la siguiente manera:
+- *Disposición de la memoria en el programa:*
 <br/>
+	Cuando finaliza la funcion `pokemon_cargar_archivo()` la memoria queda distribuida de la siguiente manera:
+
 <div align="center">
 <img width="70%" src="img/memoria1.png">
 </div>
 
-
+	Cuando se usa la funcion `pokemon_destruir_todo()` se iteran todos los campos de la memoria como esta distribuida en la imagen de arriba y se los va borrando desde adentro hacia afuera para no perder los punteros. 
