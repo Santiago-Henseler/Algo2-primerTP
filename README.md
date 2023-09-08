@@ -27,31 +27,16 @@ valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exit
 
 En este TP voy a explicar como implemente la funcion `pokemon_cargar_archivo()` porque considero que fue la más dificil de implementar.
 
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
+Al llamar a la funcion, se debe pasar por parametro un archivo. Si el archivo es NULL o si no se puede abrir la funcion termina y devuelve NULL.
 
-Incluír **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
+Si no termina, se reserva memoria dinamica en el puntero `info_pokemones` con `malloc()` para almacenar todos los pokemones validos que esten en el archivo. Si no se puede reservar esa memoria la funcion termina y devuelve NULL.
 
-### Por ejemplo:
+Si se reserva memoria correctamente se llama a la funcion `leer_pokemones()`. Luego de leer todos los pokemones si la cantidad de pokemones validos es mayor a 0 se devuelve el puntero donde se almacenaron `(info_pokemones)`. Si no hay pokemones validos devuelve NULL.
 
-El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
-
+*Aclaración:* La funcion `pokemon_cargar_archivo()` la subdividi en varios modulos para que sea mas lejible el codigo y ademas encontrar errores en el codigo sea mucho más sencillo.
+	
 <div align="center">
 <img width="70%" src="img/flujo1.jpg">
-</div>
-
-En el archivo `sarasa.c` la función `funcion1` utiliza `realloc` para agrandar la zona de memoria utilizada para conquistar el mundo. El resultado de `realloc` lo guardo en una variable auxiliar para no perder el puntero original en caso de error:
-
-```c
-int *vector = realloc(vector_original, (n+1)*sizeof(int));
-
-if(vector == NULL)
-    return -1;
-vector_original = vector;
-```
-
-
-<div align="center">
-<img width="70%" src="img/diagrama2.svg">
 </div>
 
 ---
@@ -63,7 +48,7 @@ vector_original = vector;
 
 La implementación para que los pokemons queden ordenados alfabeticamente la hice en el archivo `src/pokemon.c` en la función `ordenar_pokemones()`. La funcion recibe por parametro todos los pokemones validos y con un `for` itera pokemon a pokemon comparandolos afabeticamente con el resto almacenando en la variable `min` la posición del menor elemento. Luego intercambia   
 <br/>
--  *Analisis de la funcion que ordena alfabéticamente los pokemons:*
+-  *Analisis de la complejidad de la funcion que ordena alfabéticamente los pokemons:*
   
 ```c
 void ordenar_pokemones(struct info_pokemon *ip)
