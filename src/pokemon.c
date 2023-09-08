@@ -109,7 +109,6 @@ void leer_pokemones(FILE* archivo, struct info_pokemon *ip)
 					struct ataque **aux2 = calloc(3, sizeof(struct ataque));
 					
 					if(aux2 == NULL){
-				
 						error = true;
 					}else{
 						ip->pokemones[ip->cantidad_pokemones]->ataques = aux2;
@@ -182,15 +181,14 @@ pokemon_t *pokemon_buscar(informacion_pokemon_t *ip, const char *nombre)
 	if(ip == NULL || nombre == NULL)
 		return NULL;
 	
-	struct pokemon *aux = calloc(1, sizeof(struct pokemon*));
+	struct pokemon *aux = NULL;
+	bool encontrado = false;
 
-	if(aux == NULL)
-		return NULL;
-
-	for(int i = 0; i < ip->cantidad_pokemones; i++){
+	for(int i = 0; i < ip->cantidad_pokemones && !encontrado; i++){
 
 		if(strcmp(ip->pokemones[i]->nombre, nombre) == 0){
-				aux = ip->pokemones[i];
+				aux =  ip->pokemones[i];
+				encontrado = true;
 			}
 			
 	}
@@ -231,11 +229,13 @@ const struct ataque *pokemon_buscar_ataque(pokemon_t *pokemon,const char *nombre
 		return NULL;
 
 
-	struct ataque *aux =  NULL;
+	struct ataque *aux = NULL;
+	bool encontrado = false;
 
-	for(int i = 0;i < pokemon->cantidad_ataques; i++){
+	for(int i = 0;i < pokemon->cantidad_ataques && !encontrado; i++){
 		if(strcmp(pokemon->ataques[i]->nombre, nombre) == 0){
 			aux = pokemon->ataques[i];
+			encontrado = true;
 		}
 	}
 
