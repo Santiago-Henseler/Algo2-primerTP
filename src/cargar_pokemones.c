@@ -33,7 +33,7 @@ struct ataque *cargar_ataque_pokemon(char linea[MAX_LINEA]) {
   int cantidad =
       sscanf(linea, "%[^;];%c;%c", nuevo_ataque->nombre, &tipo, &valor);
 
-  if (cantidad < 3) {
+  if (cantidad != 3) {
     free(nuevo_ataque);
     return NULL;
   }

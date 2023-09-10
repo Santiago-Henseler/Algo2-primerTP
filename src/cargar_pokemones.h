@@ -1,6 +1,7 @@
 #ifndef CARGAR_POKEMONES_H_
 #define CARGAR_POKEMONES_H_
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
