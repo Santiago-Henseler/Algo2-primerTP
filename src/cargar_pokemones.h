@@ -21,4 +21,4 @@ struct ataque *cargar_ataque_pokemon(char linea[MAX_LINEA]);
 // Devuelve un tipo si el char es valido, sino devuelve -1
 enum TIPO definir_tipo(char texto);
 
-#endif  // CARGAR_POKEMONES_H_
+#endif // CARGAR_POKEMONES_H_
