@@ -73,6 +73,10 @@ void validar_pokemones_leidos(struct info_pokemon *ip) {
   }
 
   ip->cantidad_pokemones -= pokemones_invalidos;
+
+  if (ip->cantidad_pokemones == 0) {
+    free(ip->pokemones);
+  }
 }
 
 // Pre: Recibe un puntero a struct info_pokemon y un puntero a archivo no NULL
