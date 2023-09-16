@@ -9,7 +9,7 @@
 - Para compilar:
 
 ```bash
-gcc *.c -o entrega -std=c99 -Wall -Wconversion -Werror -lm
+gcc src/*.c -o entrega -std=c99 -Wall -Wconversion -Werror -lm
 ```
 
 - Para ejecutar:
