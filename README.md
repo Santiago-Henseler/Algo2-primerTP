@@ -4,57 +4,96 @@
 
 # TP1
 
-## Repositorio de (Nombre Apellido) - (Padrón) - (Mail)
+## Repositorio de Santiago Henseler - 110732 - shenseler@fi.uba.ar
 
 - Para compilar:
 
 ```bash
-línea de compilación
+gcc src/*.c -o entrega -std=c99 -Wall -Wconversion -Werror -lm
 ```
 
 - Para ejecutar:
 
 ```bash
-línea de ejecución
+./entrega
 ```
 
 - Para ejecutar con valgrind:
 ```bash
-línea con valgrind
+valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 --show-leak-kinds=all --trace-children=yes ./entrega
 ```
 ---
-##  Funcionamiento
+##  Funcionamiento del código
 
-Explicación de cómo funcionan las estructuras desarrolladas en el TP y el funcionamiento general del mismo.
+-  *Explicación de cómo los pokemon quedan ordenados alfabéticamente:*
+<br/>
 
-Aclarar en esta parte todas las decisiones que se tomaron al realizar el TP, cosas que no se aclaren en el enunciado, fragmentos de código que necesiten explicación extra, etc.
-
-Incluír **EN TODOS LOS TPS** los diagramas relevantes al problema (mayormente diagramas de memoria para explicar las estructuras, pero se pueden utilizar otros diagramas si es necesario).
-
-### Por ejemplo:
-
-El programa funciona abriendo el archivo pasado como parámetro y leyendolo línea por línea. Por cada línea crea un registro e intenta agregarlo al vector. La función de lectura intenta leer todo el archivo o hasta encontrar el primer error. Devuelve un vector con todos los registros creados.
-
-<div align="center">
-<img width="70%" src="img/diagrama1.svg">
-</div>
-
-En el archivo `sarasa.c` la función `funcion1` utiliza `realloc` para agrandar la zona de memoria utilizada para conquistar el mundo. El resultado de `realloc` lo guardo en una variable auxiliar para no perder el puntero original en caso de error:
-
+El algoritmo para que los pokemons queden ordenados alfabeticamente se implemento en el archivo `src/pokemon.c`, en la función `ordenar_pokemones()`. La función recibe por parámetro todos los pokemones válidos. Los itera pokemon a pokemon comparándolos afabéticamente con el resto, almacenando en la variable `min` la posición del menor elemento. una vez terminada  la comparación, en un puntero auxiliar `aux` almacena el pokemon en la posición min y luego lo intercambia por el pokemon en la posición `i`. Se repite el proceso hasta que todos los pokemones queden ordenados.
+<br/>
+-  *Análisis de la complejidad del algoritmo que ordena alfabéticamente los pokemons:*
 ```c
-int *vector = realloc(vector_original, (n+1)*sizeof(int));
+void ordenar_pokemones(struct info_pokemon *ip)
+{
+	for(int i = 0; i < ip->cantidad_pokemones; i++){ // ---> N
+		int min = i;    // ---> 1
 
-if(vector == NULL)
-    return -1;
-vector_original = vector;
+		for(int j = i; j < ip->cantidad_pokemones; j++){ // ---> N
+			if(strcmp(ip->pokemones[min]->nombre, ip->pokemones[j]->nombre) > 0){
+				min = j; // ---> 1
+			}
+		}
+
+		struct pokemon *aux = ip->pokemones[min]; // ---> 1
+		ip->pokemones[min] = ip->pokemones[i]; // ---> 1 
+		ip->pokemones[i] = aux; // ---> 1
+
+	}
+}
 ```
 
-
-<div align="center">
-<img width="70%" src="img/diagrama2.svg">
-</div>
+Contando todas las instrucciones se llega a la siguiente ecuación: `T(n) = (1+1+1+1)*n*n` . Entonces el algoritmo de ordenar_pokemones() tiene una complejidad de *O(n²)* porque: `4n² < N * n² , ∀ N > 4`
 
 ---
 
-## Respuestas a las preguntas teóricas
-Incluír acá las respuestas a las preguntas del enunciado (si aplica).
+-  *Explicación de algunas funciones y del manejo de la memoria:*
+Ahora voy a explicar como implemente la funcion `pokemon_cargar_archivo()` porque considero que fue la más dificil de implementar.
+
+Al llamar a la función, se debe pasar por parámetro un archivo. Si el archivo es NULL o si no se puede abrir la funcion termina y devuelve NULL.
+
+Si no termina, se reserva memoria dinámica en el puntero `info_pokemones` con `malloc()` para almacenar todos los pokemones válidos que estén en el archivo. Si no se puede reservar esa memoria, la función termina y devuelve NULL.
+
+Si se reserva memoria correctamente se llama a la función `leer_pokemones()`. Luego de leer todos los pokemones, si la cantidad de pokemones válidos es mayor a 0 se devuelve el puntero donde se almacenaron `(info_pokemones)`. Si no hay pokemones válidos devuelve NULL.
+
+*Aclaración:* La función `pokemon_cargar_archivo()` la subdividí en varios módulos para que sea más lejible el código y encontrar errores de manera más sencilla.
+	
+<div align="center">
+<img width="70%" src="img/flujo1.jpg">
+</div>
+
+Al llamar a la función `leer_pokemones()` se pasa por parámetro el archivo abierto y el puntero `info_pokemones`. Recorre el archivo linea por linea y si en la linea hay pokemones o ataques llama a `cargar_nombre_pokemon` o a `cargar_ataque_pokemon`. 
+
+*Aclaración:* Para mejorar la "lectura" del código implementé la libreria `cargar_pokemones.h` en la que pretendía crear la mayoria de funciones para cargar los pokemones (`cargar_nombre_pokemon` o `cargar_ataque_pokemon` por ej.) pero al manejar los structs de manera opaca y no poder modificar `pokemon.h` pude implementar pocas funciones en esta libreria.
+
+La función `cargar_nombre_pokemon` parsea el nombre de pokemon y su tipo, devolviendo un puntero a un `struct pokemon`. Maneja la memoria de la siguiente manera:
+	- Reserva memoria dinámica con `malloc()` en heap
+ 	- Devuelve el puntero a la memoria reservada en el heap
+  
+<div align="center">
+<img width="70%" src="img/memoria2.png">
+</div>
+
+Cuando se devuelve el puntero a lo que se reservó en la función `cargar_nombre_pokemon()`, en la función `leer_pokemones()` se le asigna ese puntero.
+
+<div align="center">
+<img width="70%" src="img/memoria3.png">
+</div>
+
+la función `cargar_ataque_pokemon` maneja la memoria de igual manera que la función `cargar_nombre_pokemon()` por eso no la explico.
+
+Cuando finaliza la función `pokemon_cargar_archivo()` la memoria queda distribuida de la siguiente manera:
+
+<div align="center">
+<img width="70%" src="img/memoria1.png">
+</div>
+
+Cuando se usa la función `pokemon_destruir_todo()` se iteran todos los campos de la memoria como está distribuída en la imagen de arriba y se los va borrando desde adentro hacia afuera para no perder los punteros. 
